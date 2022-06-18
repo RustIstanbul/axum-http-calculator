@@ -11,10 +11,13 @@ use std::net::SocketAddr;
 async fn main() {
 
     let app = Router::new()
-        .route("/add", post(calculate_add));
+    .route("/add", post(calculate_add))
+    .route("/subtract", post(calculate_subtract))
+    .route("/multiply", post(calculate_multiply))
+    .route("/divide", post(calculate_divide));
         
-        
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+
+    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
     
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
@@ -27,6 +30,33 @@ async fn calculate_add(
 ) -> impl IntoResponse {
     let res = CalculationResult {
       number: payload.number1 + payload.number2
+    };
+    (StatusCode::OK, Json(res))
+}
+
+async fn calculate_subtract(
+    Json(payload): Json<Numbers>,
+) -> impl IntoResponse {
+    let res = CalculationResult {
+      number: payload.number1 - payload.number2
+    };
+    (StatusCode::OK, Json(res))
+}
+
+async fn calculate_divide(
+    Json(payload): Json<Numbers>,
+) -> impl IntoResponse {
+    let res = CalculationResult {
+      number: payload.number1 / payload.number2
+    };
+    (StatusCode::OK, Json(res))
+}
+
+async fn calculate_multiply(
+    Json(payload): Json<Numbers>,
+) -> impl IntoResponse {
+    let res = CalculationResult {
+      number: payload.number1 * payload.number2
     };
     (StatusCode::OK, Json(res))
 }
